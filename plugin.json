@@ -1,8 +1,8 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "codex-playwright-browser",
-  "version": "1.0.0",
-  "description": "Control a dedicated local Playwright browser from Codex.",
+  "version": "1.1.0",
+  "description": "Control tabs in the user's existing Chrome browser from Codex.",
   "author": {
     "name": "EuZaqueuNilton",
     "url": "https://github.com/EuZaqueuNilton"
@@ -15,9 +15,9 @@
     "com.openai": {
       "onboardingSkill": "./skills/browser-control/SKILL.md",
       "interface": {
-        "displayName": "Playwright Browser",
-        "shortDescription": "Control a local Playwright browser",
-        "longDescription": "Open pages, inspect accessible content, and interact with websites in a dedicated local Playwright browser profile.",
+        "displayName": "Codex Browser",
+        "shortDescription": "Control tabs in your existing Chrome browser",
+        "longDescription": "Open pages, inspect accessible content, and interact with websites in your existing Chrome browser using the codex tab group.",
         "developerName": "EuZaqueuNilton",
         "category": "Engineering",
         "capabilities": ["Interactive", "Read", "Write"],

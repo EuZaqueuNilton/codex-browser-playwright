@@ -24,12 +24,18 @@ test('filters tool discovery and blocks restricted calls at the stdio boundary',
 import { createInterface } from 'node:readline';
 import { writeFileSync } from 'node:fs';
 
-writeFileSync(process.env.POLICY_PROBE_PATH, JSON.stringify({
+writeFileSync(process.env.TMPDIR + '/child-environment.json', JSON.stringify({
   args: process.argv.slice(2),
   profile: process.env.PLAYWRIGHT_MCP_USER_DATA_DIR,
   caps: process.env.PLAYWRIGHT_MCP_CAPS,
   webmcp: process.env.PLAYWRIGHT_MCP_WEBMCP,
   extra: process.env.PLAYWRIGHT_MCP_EXTENSION,
+  extensionToken: process.env.PLAYWRIGHT_MCP_EXTENSION_TOKEN,
+  profileDirName: process.env.PLAYWRIGHT_MCP_PROFILE_DIR_NAME,
+  apiKey: process.env.OPENAI_API_KEY,
+  npmToken: process.env.NPM_TOKEN,
+  codexHome: process.env.CODEX_HOME,
+  browserProfile: process.env.PLAYWRIGHT_BROWSER_PROFILE,
 }));
 
 const input = createInterface({ input: process.stdin, crlfDelay: Infinity });
@@ -58,12 +64,18 @@ input.on('line', line => {
     env: {
       ...process.env,
       CODEX_HOME: tempRoot,
+      HOME: tempRoot,
+      TMPDIR: tempRoot,
+      TEMP: tempRoot,
       PATH: `${binDir}${path.delimiter}${process.env.PATH}`,
-      POLICY_PROBE_PATH: probePath,
       PLAYWRIGHT_BROWSER_PROFILE: profileDir,
+      OPENAI_API_KEY: 'do-not-forward-this-value',
+      NPM_TOKEN: 'do-not-forward-this-value-either',
       PLAYWRIGHT_MCP_USER_DATA_DIR: '/must-be-cleared',
       PLAYWRIGHT_MCP_CAPS: 'storage,network',
       PLAYWRIGHT_MCP_EXTENSION: 'true',
+      PLAYWRIGHT_MCP_EXTENSION_TOKEN: 'local-test-token',
+      PLAYWRIGHT_MCP_PROFILE_DIR_NAME: 'Profile 7',
     },
     stdio: ['pipe', 'pipe', 'pipe'],
   });
@@ -111,15 +123,18 @@ input.on('line', line => {
   assert.equal(allowedResponse.result.content[0].text, 'forwarded');
 
   const childEnvironment = JSON.parse(await readFile(probePath, 'utf8'));
-  assert.deepEqual(childEnvironment.args, ['--yes', '@playwright/mcp@0.0.83', '--no-webmcp']);
-  assert.equal(childEnvironment.profile, profileDir);
+  assert.deepEqual(childEnvironment.args, ['--yes', '@playwright/mcp@0.0.83', '--extension', '--no-webmcp']);
+  assert.equal(childEnvironment.profile, undefined);
   assert.equal(childEnvironment.caps, '');
   assert.equal(childEnvironment.webmcp, 'false');
   assert.equal(childEnvironment.extra, undefined);
-
-  if (process.platform !== 'win32') {
-    assert.equal((await stat(profileDir)).mode & 0o777, 0o700);
-  }
+  assert.equal(childEnvironment.extensionToken, 'local-test-token');
+  assert.equal(childEnvironment.profileDirName, 'Profile 7');
+  assert.equal(childEnvironment.apiKey, undefined);
+  assert.equal(childEnvironment.npmToken, undefined);
+  assert.equal(childEnvironment.codexHome, undefined);
+  assert.equal(childEnvironment.browserProfile, undefined);
+  await assert.rejects(stat(profileDir), { code: 'ENOENT' });
 
   child.stdin.end();
   await once(child, 'close');

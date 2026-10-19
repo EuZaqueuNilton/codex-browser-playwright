@@ -1,13 +1,14 @@
 {
   "name": "codex-playwright-browser",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "type": "module",
   "engines": {
     "node": ">=20"
   },
   "scripts": {
-    "check": "node --check server.mjs && node --check src/policy.mjs",
-    "test": "node --test"
+    "check": "node --check server.mjs && node --check src/policy.mjs && node --check extension-src/copy-assets.mjs && node --check extension-src/src/groupTitle.mjs && node --check extension-src/src/groupController.mjs",
+    "test": "node --test",
+    "build:extension": "npm --prefix extension-src run build"
   }
 }

@@ -1,37 +1,28 @@
 #!/usr/bin/env node
 
 import { spawn } from 'node:child_process';
-import { mkdir, chmod } from 'node:fs/promises';
 import { createInterface } from 'node:readline';
-import os from 'node:os';
-import path from 'node:path';
 import { blockedCallResult, filterToolListResponse } from './src/policy.mjs';
 
 const playwrightMcpVersion = '0.0.83';
-const codexHome = process.env.CODEX_HOME || path.join(os.homedir(), '.codex');
-const browserProfile = path.resolve(
-  process.env.PLAYWRIGHT_BROWSER_PROFILE || path.join(codexHome, 'playwright-browser-profile'),
-);
+const childEnvironment = {};
+const runtimeEnvironmentKeys = process.platform === 'win32'
+  ? ['PATH', 'HOME', 'USERPROFILE', 'HOMEDRIVE', 'HOMEPATH', 'TEMP', 'TMP', 'SystemRoot', 'WINDIR', 'COMSPEC', 'PATHEXT', 'APPDATA', 'LOCALAPPDATA']
+  : ['PATH', 'HOME', 'TMPDIR', 'TMP', 'TEMP'];
 
-try {
-  await mkdir(browserProfile, { recursive: true, mode: 0o700 });
-  if (process.platform !== 'win32') await chmod(browserProfile, 0o700);
-} catch {
-  process.stderr.write('Unable to create the private Playwright browser profile directory.\n');
-  process.exit(1);
+// Keep Codex and package-manager credentials out of the Playwright subprocess.
+for (const key of runtimeEnvironmentKeys) {
+  if (process.env[key]) childEnvironment[key] = process.env[key];
 }
-
-const childEnvironment = { ...process.env };
-for (const key of Object.keys(childEnvironment)) {
-  if (key.startsWith('PLAYWRIGHT_MCP_')) delete childEnvironment[key];
+for (const key of ['PLAYWRIGHT_MCP_EXTENSION_TOKEN', 'PLAYWRIGHT_MCP_PROFILE_DIR_NAME']) {
+  if (process.env[key]) childEnvironment[key] = process.env[key];
 }
-childEnvironment.PLAYWRIGHT_MCP_USER_DATA_DIR = browserProfile;
 childEnvironment.PLAYWRIGHT_MCP_CAPS = '';
 childEnvironment.PLAYWRIGHT_MCP_WEBMCP = 'false';
 
 const child = spawn(
   process.platform === 'win32' ? 'npx.cmd' : 'npx',
-  ['--yes', `@playwright/mcp@${playwrightMcpVersion}`, '--no-webmcp'],
+  ['--yes', `@playwright/mcp@${playwrightMcpVersion}`, '--extension', '--no-webmcp'],
   {
     env: childEnvironment,
     shell: process.platform === 'win32',
