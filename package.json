@@ -1,0 +1,13 @@
+{
+  "name": "codex-playwright-browser",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "check": "node --check server.mjs && node --check src/policy.mjs",
+    "test": "node --test"
+  }
+}

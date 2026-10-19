@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "playwright_browser": {
+      "command": "node",
+      "args": ["${PLUGIN_ROOT}/server.mjs"],
+      "enabled": true,
+      "startup_timeout_sec": 120,
+      "tool_timeout_sec": 3600,
+      "env_vars": ["CODEX_HOME", "PLAYWRIGHT_BROWSER_PROFILE"]
+    }
+  }
+}

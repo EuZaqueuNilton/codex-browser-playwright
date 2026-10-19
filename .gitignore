@@ -1,0 +1,10 @@
+.env
+.env.*
+!.env.example
+node_modules/
+playwright-report/
+test-results/
+playwright-browser-profile/
+storage-state.json
+*.storage-state.json
+.DS_Store

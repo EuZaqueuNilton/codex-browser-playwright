@@ -1,0 +1,28 @@
+{
+  "name": "codex-playwright-browser",
+  "version": "1.0.0",
+  "description": "Control a dedicated local Playwright browser from Codex.",
+  "author": {
+    "name": "EuZaqueuNilton"
+  },
+  "homepage": "https://github.com/EuZaqueuNilton/codex-browser-playwright",
+  "repository": "https://github.com/EuZaqueuNilton/codex-browser-playwright",
+  "license": "MIT",
+  "keywords": ["codex", "browser", "playwright", "mcp"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Playwright Browser",
+    "shortDescription": "Control a local Playwright browser",
+    "longDescription": "Open pages, inspect accessible content, and interact with websites in a dedicated local Playwright browser profile.",
+    "developerName": "EuZaqueuNilton",
+    "category": "Engineering",
+    "capabilities": ["Interactive", "Read", "Write"],
+    "websiteURL": "https://github.com/EuZaqueuNilton/codex-browser-playwright",
+    "defaultPrompt": [
+      "Open a website and summarize its accessible content",
+      "Use the local browser to inspect this page",
+      "Test this website in Playwright"
+    ],
+    "brandColor": "#2D6CDF"
+  }
+}
